@@ -4,11 +4,11 @@ import {
   getHistoricalProjectData,
   getHistoricalOperationsData,
   getHistoricalCICDData,
-  getHistoricalCrossProjectData
+  getHistoricalCrossProjectData, getHistoricalInfrastructureElementData
 } from '../../services/historicalData/historicalData.service';
 import { HistoricalDataParams, ProjectHistoricalDataPoint } from '../../services/historicalData/historicalData.interface';
 
-type HistoricalDataType = 'projects' | 'sdlc' | 'operations' | 'cicd';
+type HistoricalDataType = 'projects' | 'sdlc' | 'operations' | 'cicd' | 'infrastructureElement';
 
 interface UseHistoricalDataParams extends HistoricalDataParams {
   type: HistoricalDataType;
@@ -16,7 +16,7 @@ interface UseHistoricalDataParams extends HistoricalDataParams {
   ids?: number[];
 }
 
-const useHistoricalData = ({ type, startDate, endDate, tags, ids }: UseHistoricalDataParams) => {
+const useHistoricalData = ({ type, startDate, endDate, tags, ids, serviceId }: UseHistoricalDataParams) => {
   const [data, setData] = useState<ProjectHistoricalDataPoint[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -35,6 +35,9 @@ const useHistoricalData = ({ type, startDate, endDate, tags, ids }: UseHistorica
             break;
           case 'operations':
             result = await getHistoricalOperationsData({ startDate, endDate}, tags! );
+            break;
+          case 'infrastructureElement':
+            result = await getHistoricalInfrastructureElementData({ startDate, endDate, serviceId}, tags! );
             break;
           case 'cicd':
             result = await getHistoricalCICDData({ startDate, endDate, tags, ids });

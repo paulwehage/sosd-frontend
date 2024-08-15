@@ -1,14 +1,32 @@
 import React from 'react';
 import { Card, CardContent, Typography, Box } from '@mui/material';
 import { InfrastructureElement } from '../../services/operations/operations.interface';
+import {useNavigate} from 'react-router-dom';
+import useProjectContext from '../../hooks/context/useProjectContext.ts';
 
 interface InfrastructureElementCardProps {
   element: InfrastructureElement;
 }
 
+
 const InfrastructureElementCard: React.FC<InfrastructureElementCardProps> = ({ element }) => {
+
+  const navigate = useNavigate();
+  const { activeProject } = useProjectContext();
+const handleClick = () => {
+  navigate(`/projects/${activeProject!.id}/operations/${element.id}`);
+};
+
   return (
-    <Card>
+    <Card
+      sx={{
+        cursor: 'pointer',
+        transition: '0.3s',
+        '&:hover': {
+          backgroundColor: 'rgba(0, 0, 0, 0.04)',
+        },
+      }}
+    onClick={handleClick}>
       <CardContent>
         <Typography variant="h6">{element.name}</Typography>
         <Typography variant="subtitle1">{element.type}</Typography>

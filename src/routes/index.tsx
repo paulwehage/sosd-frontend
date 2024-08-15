@@ -4,6 +4,7 @@ import ProjectPage from '../pages/Project';
 import OperationsPage from '../pages/Operations.tsx';
 import IntegrationDeploymentPage from '../pages/Integration.tsx';
 import Layout from '../components/Layout.tsx';
+import InfrastructureElementPage from '../pages/InfrastructureElement.tsx';
 
 export const router = createBrowserRouter([
   {
@@ -33,7 +34,10 @@ export const router = createBrowserRouter([
             path: ':id/integration-deployment',
             element: <IntegrationDeploymentPage />
           },
-          // Fügen Sie hier weitere SDLC-Schritt-Routen hinzu
+          {
+            path: ':id/operations/:elementId',
+            element: <InfrastructureElementPage />
+          }
         ]
       }
     ]

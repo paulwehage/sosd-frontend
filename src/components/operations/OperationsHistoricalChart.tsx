@@ -1,6 +1,6 @@
-import React, { FC, useMemo } from 'react';
+import React, { FC, useState, useMemo, useEffect } from 'react';
 import { LineChart } from '@mui/x-charts';
-import { Box, Paper, Typography } from '@mui/material';
+import { Box, Paper, Typography, FormGroup, FormControlLabel, Checkbox } from '@mui/material';
 import dayjs from 'dayjs';
 import LoadingCircle from '../LoadingCircle';
 
@@ -18,36 +18,52 @@ interface OperationsHistoricalChartProps {
 }
 
 const OperationsHistoricalChart: FC<OperationsHistoricalChartProps> = ({ data, loading }) => {
-  const processedData = useMemo(() => {
-    if (!data || data.length === 0) return { dates: [], series: [] };
+  const [activeElements, setActiveElements] = useState<string[]>([]);
 
-    const serviceMap = new Map<string, { [date: string]: number }>();
-    const dateSet = new Set<string>();
+  const processedData = useMemo(() => {
+    if (!data || data.length === 0) return { xAxis: [], series: [] };
+
+    const elementMap = new Map<string, Map<number, number>>();
+    const dateSet = new Set<number>();
 
     data.forEach((point) => {
-      if (!point.date || !point.infrastructure_element_name || !point.service_name || !point.cloud_provider) {
-        console.warn('Invalid data point:', point);
-        return;
-      }
+      const elementKey = `${point.infrastructure_element_name} (${point.service_name} - ${point.cloud_provider})`;
+      const dateValue = dayjs(point.date).valueOf();
+      dateSet.add(dateValue);
 
-      const serviceKey = `${point.infrastructure_element_name} (${point.service_name} - ${point.cloud_provider})`;
-      dateSet.add(point.date);
-
-      if (!serviceMap.has(serviceKey)) {
-        serviceMap.set(serviceKey, {});
+      if (!elementMap.has(elementKey)) {
+        elementMap.set(elementKey, new Map());
       }
-      serviceMap.get(serviceKey)![point.date] = point.total_co2_consumption;
+      elementMap.get(elementKey)!.set(dateValue, point.total_co2_consumption);
     });
 
-    const sortedDates = Array.from(dateSet).sort();
+    const sortedDates = Array.from(dateSet).sort((a, b) => a - b);
 
-    const series = Array.from(serviceMap.entries()).map(([serviceKey, dateValues]) => ({
-      label: serviceKey,
-      data: sortedDates.map(date => dateValues[date] || 0)
+    const series = Array.from(elementMap.entries()).map(([elementKey, dateValues]) => ({
+      label: elementKey,
+      data: sortedDates.map(date => dateValues.get(date) || null),
     }));
 
-    return { dates: sortedDates, series };
+    return { xAxis: sortedDates, series };
   }, [data]);
+
+  useEffect(() => {
+    if (processedData.series.length > 0 && activeElements.length === 0) {
+      setActiveElements(processedData.series.map(s => s.label));
+    }
+  }, [processedData.series, activeElements]);
+
+  const filteredSeries = useMemo(() => {
+    return processedData.series.filter(s => activeElements.includes(s.label));
+  }, [processedData.series, activeElements]);
+
+  const handleElementToggle = (elementName: string) => {
+    setActiveElements(prev =>
+      prev.includes(elementName)
+        ? prev.filter(e => e !== elementName)
+        : [...prev, elementName]
+    );
+  };
 
   if (loading) return <LoadingCircle />;
 
@@ -59,46 +75,54 @@ const OperationsHistoricalChart: FC<OperationsHistoricalChartProps> = ({ data, l
     );
   }
 
-  if (processedData.dates.length === 0 || processedData.series.length === 0) {
-    return (
-      <Paper elevation={3} sx={{ p: 2 }}>
-        <Typography>Unable to process historical data</Typography>
-      </Paper>
-    );
-  }
-
-  const safeValueFormatter = (value: any) => {
-    if (value === null || value === undefined) {
-      console.warn('Null or undefined value encountered in valueFormatter');
-      return 'N/A';
-    }
-    return dayjs(value).format('YYYY-MM-DD');
-  };
-
   return (
     <Paper elevation={3} sx={{ p: 2 }}>
       <Typography variant="h6" gutterBottom>Historical CO2 Consumption</Typography>
-      <Box sx={{ height: 600, width: '100%' }}>
+      <Box sx={{ height: 500, width: '100%' }}>
         <LineChart
           xAxis={[{
-            data: processedData.dates,
+            data: processedData.xAxis,
             scaleType: 'time',
-            valueFormatter: safeValueFormatter,
+            valueFormatter: (value: number) => dayjs(value).format('YYYY-MM-DD'),
           }]}
           yAxis={[{
             label: 'CO2 Consumption (g)',
           }]}
-          series={processedData.series.map(s => ({
+          series={filteredSeries.map(s => ({
             ...s,
-            valueFormatter: (value: number) =>
-              value !== null && value !== undefined
-                ? `${value.toFixed(2)}g CO2`
-                : 'N/A',
+            valueFormatter: (value: number | null) =>
+              value !== null ? `${value.toFixed(2)}g CO2` : 'N/A',
           }))}
-          height={600}
-          margin={{ top: 20, right: 40, bottom: 70, left: 60 }}
+          height={400}
+          width={800}
+          margin={{ top: 20, right: 20, bottom: 30, left: 60 }}
+          sx={{
+            '.MuiLineElement-root': {
+              strokeWidth: 2,
+            },
+            '.MuiMarkElement-root': {
+              stroke: 'white',
+              scale: '0.6',
+              fill: 'white',
+            },
+          }}
         />
       </Box>
+      <FormGroup row sx={{ mt: 2, flexWrap: 'wrap', justifyContent: 'center' }}>
+        {processedData.series.map(({ label }) => (
+          <FormControlLabel
+            key={label}
+            control={
+              <Checkbox
+                checked={activeElements.includes(label)}
+                onChange={() => handleElementToggle(label)}
+                size="small"
+              />
+            }
+            label={label}
+          />
+        ))}
+      </FormGroup>
     </Paper>
   );
 };

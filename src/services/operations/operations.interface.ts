@@ -20,6 +20,17 @@ export interface InfrastructureElement {
   };
 }
 
+export interface InfrastructureElementDetail extends InfrastructureElement {
+  metrics: Metric[];
+}
+
+export interface Metric {
+  name: string;
+  value: string | number;
+  dataType: 'integer' | 'decimal' | 'string';
+  timestamp: string;
+}
+
 export interface GetInfrastructureElementsParams {
   tags: string[];
   matchAll: boolean;

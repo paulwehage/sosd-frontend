@@ -15,7 +15,6 @@ const ProjectPage: React.FC = () => {
   const projectId = Number(id);
   const { project, userFlows, loading: projectLoading, error: projectError } = useProject(projectId);
   const { setActiveProject } = useProjectContext();
-
   const projectTags = useMemo(() => project?.tags.map(tag => tag.name) || [], [project?.tags]);
 
   useEffect(() => {
@@ -25,13 +24,15 @@ const ProjectPage: React.FC = () => {
   }, [project, setActiveProject]);
 
   const { data: historicalData, loading: historicalLoading, error: historicalError } = useHistoricalData({
-    type: 'project',
+    type: 'sdlc',
     startDate: dayjs('2024-05-16').startOf('day').toISOString(),
     endDate: dayjs('2024-07-16').startOf('day').toISOString(),
     tags: projectTags
   });
 
-  if (projectLoading) {
+  const isLoading = projectLoading || historicalLoading;
+
+  if (isLoading) {
     return <LoadingCircle />;
   }
 
@@ -48,14 +49,18 @@ const ProjectPage: React.FC = () => {
       <Typography variant="h4" gutterBottom>{project.name}</Typography>
       <Grid container spacing={2}>
         <Grid item xs={12} md={6}>
-          <SDLCOverview
-            data={project.sdlcOverview}
-            projectId={projectId}
-            loading={!project.sdlcOverview}
-          />
-          <Box sx={{ mt: 2 }}>
-            <UserFlows flows={userFlows} loading={!userFlows.length} />
-          </Box>
+          {project.sdlcOverview && (
+            <SDLCOverview
+              data={project.sdlcOverview}
+              projectId={projectId}
+              loading={false}
+            />
+          )}
+          {userFlows.length > 0 && (
+            <Box sx={{ mt: 2 }}>
+              <UserFlows flows={userFlows} loading={false} />
+            </Box>
+          )}
         </Grid>
         <Grid item xs={12} md={6}>
           <ProjectChart

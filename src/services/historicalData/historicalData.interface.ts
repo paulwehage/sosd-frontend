@@ -12,6 +12,21 @@ export interface ProjectHistoricalDataPoint {
   total_co2_consumption: number;
 }
 
+export interface OperationsHistoricalDataPoint {
+  date: string;
+  infrastructure_element_name: string;
+  service_name: string;
+  cloud_provider: string;
+  total_co2_consumption: number;
+}
+
+export interface InfrastructureElementHistoricalDataPoint {
+    infrastructure_type: string;
+    service_id: string;
+    date: string;
+    total_co2_consumption: number;
+}
+
 
 export interface HistoricalDataParams {
   startDate: string;

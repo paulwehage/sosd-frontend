@@ -1,6 +1,6 @@
 import {API_DOMAIN} from '../../constants';
 import {
-  CrossProjectHistoricalDataPoint,
+  CrossProjectHistoricalDataPoint, InfrastructureElementHistoricalDataPoint, OperationsHistoricalDataPoint,
   ProjectHistoricalDataPoint
 } from './historicalData.interface.ts';
 
@@ -18,7 +18,7 @@ export const getHistoricalProjectData = async (params, tags: string[]): Promise<
   return response.json();
 };
 
-export const getHistoricalOperationsData = async (params, tags: string[]): Promise<ProjectHistoricalDataPoint[]> => {
+export const getHistoricalOperationsData = async (params, tags: string[]): Promise<OperationsHistoricalDataPoint[]> => {
   const response = await fetch(`${API_DOMAIN}/historical-data/projects/operations?startDate=${params.startDate}&endDate=${params.endDate}&tags=${tags.join(',')}`);
   if (!response.ok) throw new Error('Failed to fetch operations historical data');
   return response.json();
@@ -29,3 +29,9 @@ export const getHistoricalCICDData = async (params): Promise<ProjectHistoricalDa
   if (!response.ok) throw new Error('Failed to fetch cicd historical data');
   return response.json();
 };
+
+export const getHistoricalInfrastructureElementData = async (params, tags: string[]): Promise<InfrastructureElementHistoricalDataPoint[]> => {
+    const response = await fetch(`${API_DOMAIN}/historical-data/projects/services/${params.serviceId}?startDate=${params.startDate}&endDate=${params.endDate}&tags=${tags.join(',')}`);
+    if (!response.ok) throw new Error('Failed to fetch infrastructure element historical data');
+    return response.json();
+}

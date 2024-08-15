@@ -1,4 +1,3 @@
-// src/hooks/projects/useProject.ts
 import { useState, useEffect } from 'react';
 import { getProject } from '../../services/projects/project.service';
 import {UserFlow} from '../../services/userFlows/userflows.interface.ts';
@@ -13,11 +12,6 @@ const useProject = (projectId: number) => {
 
   useEffect(() => {
     const fetchProjectData = async () => {
-      if (activeProject && activeProject.id === projectId) {
-        setLoading(false);
-        return;
-      }
-
       try {
         setLoading(true);
         const [projectData, userFlowsData] = await Promise.all([
@@ -36,7 +30,7 @@ const useProject = (projectId: number) => {
     };
 
     fetchProjectData();
-  }, [projectId, activeProject, setActiveProject]);
+  }, [projectId, setActiveProject]);
 
   return { project: activeProject, userFlows, loading, error };
 };
