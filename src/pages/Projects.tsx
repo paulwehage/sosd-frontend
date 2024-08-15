@@ -1,5 +1,5 @@
 import React, { FC, useState, useMemo } from 'react';
-import { Box, Button, Grid, TextField } from '@mui/material';
+import {Box, Button, CircularProgress, Grid, Paper, TextField} from '@mui/material';
 import useProjects from '../hooks/projects/useProjects';
 import useHistoricalData from '../hooks/historicalData/useHistoricalData.ts';
 import ProjectList from '../components/crossProject/ProjectList';
@@ -16,7 +16,7 @@ const Projects: FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   const { data: historicalData, loading: historicalDataLoading, error: historicalDataError } = useHistoricalData({
-    type: 'crossProject',
+    type: 'projects',
     startDate: dayjs('2024-05-16').startOf('day').toISOString(),  // Start of day ISO format
     endDate: dayjs('2024-07-25').endOf('day').toISOString()        // End of day ISO format
   });
@@ -65,7 +65,13 @@ const Projects: FC = () => {
     setIsFormOpen(false);
   };
 
-  if (projectsLoading || historicalDataLoading) return <div>Loading...</div>;
+  if (projectsLoading || historicalDataLoading) {
+    return (
+      <Box width="100%" display="flex">
+        <CircularProgress style={{ margin: "0 auto" }} />
+      </Box>
+    )
+  }
   if (projectsError || historicalDataError) return <div>Error: {projectsError || historicalDataError}</div>;
 
   return (

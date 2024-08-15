@@ -3,6 +3,7 @@ import { Card, CardContent, Typography, Chip, Box, IconButton } from '@mui/mater
 import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { Project } from '../../services/projects/project.interface';
+import useProjectContext from '../../hooks/context/useProjectContext.ts';
 
 interface ProjectCardProps {
   project: Project;
@@ -12,8 +13,10 @@ interface ProjectCardProps {
 
 const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit, onDelete }) => {
   const navigate = useNavigate();
+  const { setActiveProject } = useProjectContext();
 
   const handleClick = () => {
+    setActiveProject(project);
     navigate(`/projects/${project.id}`);
   };
 

@@ -1,10 +1,11 @@
-import React, { FC, useState, useMemo } from 'react';
+import React, { FC, useState, useMemo, useEffect } from 'react';
 import { LineChart } from '@mui/x-charts';
-import { Box, Grid, Paper, Checkbox, FormGroup, FormControlLabel } from '@mui/material';
+import { Box, Grid, Paper, Checkbox, FormGroup, FormControlLabel, Typography } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import dayjs, { Dayjs } from 'dayjs';
+import LoadingCircle from '../LoadingCircle.tsx';
 
 interface ProjectHistoricalDataPoint {
   sdlc_step: string;
@@ -14,14 +15,16 @@ interface ProjectHistoricalDataPoint {
 
 interface ProjectHistoricalChartProps {
   data: ProjectHistoricalDataPoint[];
+  loading: boolean;
 }
 
-const ProjectHistoricalChart: FC<ProjectHistoricalChartProps> = ({ data }) => {
+const ProjectHistoricalChart: FC<ProjectHistoricalChartProps> = ({ data, loading }) => {
   const [startDate, setStartDate] = useState<Dayjs>(dayjs('2024-05-16'));
   const [endDate, setEndDate] = useState<Dayjs>(dayjs('2024-07-25'));
   const [activeSteps, setActiveSteps] = useState<string[]>([]);
 
   const filteredData = useMemo(() => {
+    if (!data) return [];
     return data.filter(point => {
       const pointDate = dayjs(point.date);
       return pointDate.isAfter(startDate) && pointDate.isBefore(endDate);
@@ -40,13 +43,14 @@ const ProjectHistoricalChart: FC<ProjectHistoricalChartProps> = ({ data }) => {
       return acc;
     }, {} as Record<string, { date: number; co2: number }[]>);
 
-    // Initialize activeSteps if it's empty
-    if (activeSteps.length === 0) {
-      setActiveSteps(Object.keys(stepMap));
-    }
-
     return stepMap;
-  }, [filteredData, activeSteps]);
+  }, [filteredData]);
+
+  useEffect(() => {
+    if (Object.keys(stepData).length > 0 && activeSteps.length === 0) {
+      setActiveSteps(Object.keys(stepData));
+    }
+  }, [stepData, activeSteps]);
 
   const allDates = useMemo(() => {
     return [...new Set(filteredData.map(point => dayjs(point.date).valueOf()))].sort((a, b) => a - b);
@@ -69,6 +73,16 @@ const ProjectHistoricalChart: FC<ProjectHistoricalChartProps> = ({ data }) => {
         : [...prev, stepName]
     );
   };
+
+  if (loading) return <LoadingCircle />;
+
+  if (!data || data.length === 0) {
+    return (
+      <Paper elevation={3} sx={{ p: 2 }}>
+        <Typography>No data available</Typography>
+      </Paper>
+    );
+  }
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>

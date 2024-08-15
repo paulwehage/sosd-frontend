@@ -1,18 +1,46 @@
-import React from 'react';
-import { useParams } from 'react-router-dom';
-import {Typography, Paper, Box} from '@mui/material';
+import React, { useCallback, useMemo } from 'react';
+import { Grid, Paper, Typography, Box } from '@mui/material';
+import useOperations from '../hooks/operations/useOperations';
+import useHistoricalData from '../hooks/historicalData/useHistoricalData';
+import InfrastructureElementList from '../components/operations/InfrastructureElementList';
+import OperationsHistoricalChart from '../components/operations/OperationsHistoricalChart';
+import dayjs from 'dayjs';
+import useProjectContext from '../hooks/context/useProjectContext.ts';
 
 const OperationsPage: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const { activeProject } = useProjectContext();
+
+  const projectTags = useMemo(() =>
+      activeProject?.tags.map(tag => tag.name) || [],
+    [activeProject?.tags]
+  );
+
+  const { data: infrastructureElements, loading: opsLoading, error: opsError } = useOperations({ tags: projectTags });
+
+  const historicalDataParams = useMemo(() => ({
+    type: 'operations' as const,
+    startDate: dayjs('2024-05-16').startOf('day').toISOString(),
+    endDate: dayjs('2024-07-16').startOf('day').toISOString(),
+    tags: projectTags
+  }), [projectTags]);
+
+  const { data: historicalData, loading: historicalLoading, error: historicalError } = useHistoricalData(historicalDataParams);
+
+  if (!activeProject) return <Typography>No active project selected</Typography>;
+  if (opsLoading || historicalLoading) return <Typography>Loading...</Typography>;
+  if (opsError || historicalError) return <Typography>Error loading data</Typography>;
 
   return (
-    <Box>
-      <Typography variant="h4" gutterBottom>Operations</Typography>
-      <Paper sx={{ p: 2 }}>
-        <Typography variant="h5" gutterBottom>Details</Typography>
-        <Typography>Detailed information about operations for Project {id}</Typography>
-        {/* Fügen Sie hier mehr inhaltsspezifische Komponenten für die Operations-Seite hinzu */}
-      </Paper>
+    <Box p={3}>
+      <Typography variant="h4" gutterBottom>{activeProject.name} - Operations Dashboard</Typography>
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={6}>
+          <InfrastructureElementList elements={infrastructureElements} />
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <OperationsHistoricalChart data={historicalData}  loading={historicalLoading}/>
+        </Grid>
+      </Grid>
     </Box>
   );
 };

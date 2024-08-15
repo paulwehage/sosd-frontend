@@ -18,4 +18,10 @@ export interface HistoricalDataParams {
   endDate: string;
 }
 
+export interface ProjectSdlcHistoricalDataParams  {
+  dateParams: HistoricalDataParams;
+  type: string;
+  tags: string[];
+}
+
 export type HistoricalDataType = 'crossProject' | 'project'  /* | other types */;

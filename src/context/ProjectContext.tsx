@@ -1,21 +1,13 @@
 // src/contexts/ProjectContext.tsx
-import React, {createContext, useContext, useState, ReactNode, useCallback} from 'react';
-import {ProjectDetail} from '../../services/projects/project.interface.ts';
+import React, { createContext, useState, ReactNode, useCallback } from 'react';
+import { ProjectDetail } from '../services/projects/project.interface';
 
 interface ProjectContextType {
   activeProject: ProjectDetail | null;
   setActiveProject: (project: ProjectDetail | null) => void;
 }
 
-const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
-
-export const useProjectContext = () => {
-  const context = useContext(ProjectContext);
-  if (context === undefined) {
-    throw new Error('useProjectContext must be used within a ProjectProvider');
-  }
-  return context;
-};
+export const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
 
 interface ProjectProviderProps {
   children: ReactNode;

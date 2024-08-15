@@ -1,9 +1,9 @@
 // src/hooks/projects/useProject.ts
 import { useState, useEffect } from 'react';
 import { getProject } from '../../services/projects/project.service';
-import {useProjectContext} from '../../components/context/ProjectContext.tsx';
 import {UserFlow} from '../../services/userFlows/userflows.interface.ts';
 import {getUserFlows} from '../../services/userFlows/userflows.service.ts';
+import useProjectContext from '../context/useProjectContext.ts';
 
 const useProject = (projectId: number) => {
   const { activeProject, setActiveProject } = useProjectContext();

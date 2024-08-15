@@ -2,19 +2,31 @@ import React from 'react';
 import { Box, Typography, Grid, Paper } from '@mui/material';
 import { SdlcStep } from '../../services/projects/project.interface.ts';
 import { Link as RouterLink } from 'react-router-dom';
+import LoadingCircle from '../LoadingCircle.tsx';
 
 interface SDLCOverviewProps {
-  data: {
+  data?: {
     totalCo2: number;
     steps: SdlcStep[];
   };
+  projectId: number;
+  loading: boolean;
 }
 
-const SDLCOverview: React.FC<SDLCOverviewProps> = ({ data, projectId }) => {
+const SDLCOverview: React.FC<SDLCOverviewProps> = ({ data, projectId, loading }) => {
   const getStepPath = (stepName: string) => {
-    // Convert step name to URL-friendly format
     return stepName.toLowerCase().replace('_', '-');
   };
+
+  if (loading) return <LoadingCircle />;
+
+  if (!data) {
+    return (
+      <Paper elevation={3} sx={{ p: 2 }}>
+        <Typography>SDLC Overview data is not available</Typography>
+      </Paper>
+    );
+  }
 
   return (
     <Paper elevation={3} sx={{ p: 2 }}>

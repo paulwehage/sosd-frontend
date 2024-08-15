@@ -1,4 +1,4 @@
-import { API_DOMAIN } from '../../constants';
+import {API_DOMAIN} from '../../constants';
 import {Project, ProjectDetail, ProjectFormData} from './project.interface';
 
 export const getAllProjects = async (): Promise<Project[]> => {
@@ -10,8 +10,16 @@ export const getAllProjects = async (): Promise<Project[]> => {
 };
 
 export const getProject = async (id: number): Promise<ProjectDetail> => {
-  const response = await fetch(`${API_DOMAIN}/projects/${id}`);
-  return response.json();
+  try {
+    const response = await fetch(`${API_DOMAIN}/projects/${id}`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching project:', error);
+    throw error;
+  }
 };
 
 export const createProject = async (projectData: ProjectFormData): Promise<Project> => {

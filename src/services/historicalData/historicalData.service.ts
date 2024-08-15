@@ -18,14 +18,8 @@ export const getHistoricalProjectData = async (params, tags: string[]): Promise<
   return response.json();
 };
 
-export const getHistoricalSDLCData = async (params): Promise<ProjectHistoricalDataPoint[]> => {
-  const response = await fetch(`${API_DOMAIN}/historical-data/sdlc?startDate=${params.startDate}&endDate=${params.endDate}`);
-  if (!response.ok) throw new Error('Failed to fetch sdlc historical data');
-  return response.json();
-};
-
-export const getHistoricalOperationsData = async (params): Promise<ProjectHistoricalDataPoint[]> => {
-  const response = await fetch(`${API_DOMAIN}/historical-data/operations?startDate=${params.startDate}&endDate=${params.endDate}`);
+export const getHistoricalOperationsData = async (params, tags: string[]): Promise<ProjectHistoricalDataPoint[]> => {
+  const response = await fetch(`${API_DOMAIN}/historical-data/projects/operations?startDate=${params.startDate}&endDate=${params.endDate}&tags=${tags.join(',')}`);
   if (!response.ok) throw new Error('Failed to fetch operations historical data');
   return response.json();
 };

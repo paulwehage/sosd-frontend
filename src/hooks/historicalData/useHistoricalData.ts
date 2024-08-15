@@ -2,14 +2,13 @@
 import { useState, useEffect } from 'react';
 import {
   getHistoricalProjectData,
-  getHistoricalSDLCData,
   getHistoricalOperationsData,
   getHistoricalCICDData,
   getHistoricalCrossProjectData
 } from '../../services/historicalData/historicalData.service';
 import { HistoricalDataParams, ProjectHistoricalDataPoint } from '../../services/historicalData/historicalData.interface';
 
-type HistoricalDataType = 'crossProject' | 'project' | 'sdlc' | 'operations' | 'cicd';
+type HistoricalDataType = 'projects' | 'sdlc' | 'operations' | 'cicd';
 
 interface UseHistoricalDataParams extends HistoricalDataParams {
   type: HistoricalDataType;
@@ -28,17 +27,14 @@ const useHistoricalData = ({ type, startDate, endDate, tags, ids }: UseHistorica
         setLoading(true);
         let result;
         switch (type) {
-          case 'crossProject':
+          case 'projects':
               result = await getHistoricalCrossProjectData({ startDate, endDate });
               break;
-          case 'project':
-            result = await getHistoricalProjectData({ startDate, endDate }, tags!);
-            break;
           case 'sdlc':
-            result = await getHistoricalSDLCData({ startDate, endDate, tags });
+            result = await getHistoricalProjectData({ startDate, endDate}, tags! );
             break;
           case 'operations':
-            result = await getHistoricalOperationsData({ startDate, endDate, tags, ids });
+            result = await getHistoricalOperationsData({ startDate, endDate}, tags! );
             break;
           case 'cicd':
             result = await getHistoricalCICDData({ startDate, endDate, tags, ids });
