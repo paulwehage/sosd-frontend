@@ -24,8 +24,8 @@ export const getHistoricalOperationsData = async (params, tags: string[]): Promi
   return response.json();
 };
 
-export const getHistoricalCICDData = async (params): Promise<ProjectHistoricalDataPoint[]> => {
-  const response = await fetch(`${API_DOMAIN}/historical-data/cicd?startDate=${params.startDate}&endDate=${params.endDate}`);
+export const getHistoricalCICDData = async (params, tags: string[]): Promise<ProjectHistoricalDataPoint[]> => {
+  const response = await fetch(`${API_DOMAIN}/historical-data/projects/cicd?startDate=${params.startDate}&endDate=${params.endDate}&tags=${tags.join(',')}`);
   if (!response.ok) throw new Error('Failed to fetch cicd historical data');
   return response.json();
 };

@@ -8,7 +8,7 @@ import {
 } from '../../services/historicalData/historicalData.service';
 import { HistoricalDataParams, ProjectHistoricalDataPoint } from '../../services/historicalData/historicalData.interface';
 
-type HistoricalDataType = 'projects' | 'sdlc' | 'operations' | 'cicd' | 'infrastructureElement';
+type HistoricalDataType = 'projects' | 'sdlc' | 'operations' | 'cicd' | 'infrastructureElement' | 'pipeline';
 
 interface UseHistoricalDataParams extends HistoricalDataParams {
   type: HistoricalDataType;
@@ -40,7 +40,10 @@ const useHistoricalData = ({ type, startDate, endDate, tags, ids, serviceId }: U
             result = await getHistoricalInfrastructureElementData({ startDate, endDate, serviceId}, tags! );
             break;
           case 'cicd':
-            result = await getHistoricalCICDData({ startDate, endDate, tags, ids });
+            result = await getHistoricalCICDData({ startDate, endDate}, tags!);
+            break;
+          case 'pipeline':
+            //result = await getHistoricalPipelineData({ startDate, endDate}, tags!);
             break;
           default:
             throw new Error('Invalid historical data type');

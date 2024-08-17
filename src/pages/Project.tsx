@@ -1,6 +1,6 @@
 import React, { useMemo, useEffect } from 'react';
 import { useParams, Outlet } from 'react-router-dom';
-import { Box, Typography, Grid, CircularProgress } from '@mui/material';
+import {Box, Typography, Grid, CircularProgress, Paper} from '@mui/material';
 import useProject from '../hooks/projects/useProject';
 import useHistoricalData from '../hooks/historicalData/useHistoricalData';
 import SDLCOverview from '../components/project/SDLCOverview';

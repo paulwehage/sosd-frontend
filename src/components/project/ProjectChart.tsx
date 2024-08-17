@@ -1,10 +1,10 @@
-import React, { FC, useState, useMemo, useEffect } from 'react';
-import { LineChart } from '@mui/x-charts';
-import { Box, Grid, Paper, Checkbox, FormGroup, FormControlLabel, Typography } from '@mui/material';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import dayjs, { Dayjs } from 'dayjs';
+import React, {FC, useState, useMemo, useEffect} from 'react';
+import {LineChart} from '@mui/x-charts';
+import {Box, Grid, Paper, Checkbox, FormGroup, FormControlLabel, Typography} from '@mui/material';
+import {DatePicker} from '@mui/x-date-pickers/DatePicker';
+import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
+import {LocalizationProvider} from '@mui/x-date-pickers';
+import dayjs, {Dayjs} from 'dayjs';
 import LoadingCircle from '../LoadingCircle.tsx';
 
 interface ProjectHistoricalDataPoint {
@@ -18,7 +18,7 @@ interface ProjectHistoricalChartProps {
   loading: boolean;
 }
 
-const ProjectHistoricalChart: FC<ProjectHistoricalChartProps> = ({ data, loading }) => {
+const ProjectHistoricalChart: FC<ProjectHistoricalChartProps> = ({data, loading}) => {
   const [startDate, setStartDate] = useState<Dayjs>(dayjs('2024-05-16'));
   const [endDate, setEndDate] = useState<Dayjs>(dayjs('2024-07-25'));
   const [activeSteps, setActiveSteps] = useState<string[]>([]);
@@ -74,11 +74,11 @@ const ProjectHistoricalChart: FC<ProjectHistoricalChartProps> = ({ data, loading
     );
   };
 
-  if (loading) return <LoadingCircle />;
+  if (loading) return <LoadingCircle/>;
 
   if (!data || data.length === 0) {
     return (
-      <Paper elevation={3} sx={{ p: 2 }}>
+      <Paper elevation={3} sx={{p: 2}}>
         <Typography>No data available</Typography>
       </Paper>
     );
@@ -86,24 +86,22 @@ const ProjectHistoricalChart: FC<ProjectHistoricalChartProps> = ({ data, loading
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Paper elevation={3} sx={{ p: 2 }}>
-        <Grid container spacing={2} sx={{ mb: 2 }}>
-          <Grid item xs={4}>
-            <DatePicker
-              label="Start Date"
-              value={startDate}
-              onChange={(newValue) => newValue && setStartDate(newValue)}
-            />
-          </Grid>
-          <Grid item xs={4}>
-            <DatePicker
-              label="End Date"
-              value={endDate}
-              onChange={(newValue) => newValue && setEndDate(newValue)}
-            />
-          </Grid>
-        </Grid>
-        <Box sx={{ height: 400, width: '100%', mb: 4 }}>
+      <Paper elevation={3} sx={{p: 4}}>
+        <Box sx={{height: 500, width: '100%'}}>
+          <Typography variant="h6" gutterBottom>Historical Project CO2 Consumption</Typography>
+          <DatePicker
+            label="Start Date"
+            value={startDate}
+            format="YYYY-MM-DD"
+            onChange={(newValue) => newValue && setStartDate(newValue)}
+            sx={{mr: 8, ml: 2}}
+          />
+          <DatePicker
+            label="End Date"
+            value={endDate}
+            format="YYYY-MM-DD"
+            onChange={(newValue) => newValue && setEndDate(newValue)}
+          />
           <LineChart
             xAxis={[{
               data: allDates,
@@ -114,25 +112,24 @@ const ProjectHistoricalChart: FC<ProjectHistoricalChartProps> = ({ data, loading
               label: 'CO2 Consumption (g)',
             }]}
             series={series}
-            height={450}
-            width={900}
-            margin={{ top: 20, right: 40, bottom: 70, left: 60 }}
+            height={400}
+            width={700}
           />
+          <FormGroup row>
+            {Object.keys(stepData).map(stepName => (
+              <FormControlLabel
+                key={stepName}
+                control={
+                  <Checkbox
+                    checked={activeSteps.includes(stepName)}
+                    onChange={() => handleStepToggle(stepName)}
+                  />
+                }
+                label={stepName}
+              />
+            ))}
+          </FormGroup>
         </Box>
-        <FormGroup row>
-          {Object.keys(stepData).map(stepName => (
-            <FormControlLabel
-              key={stepName}
-              control={
-                <Checkbox
-                  checked={activeSteps.includes(stepName)}
-                  onChange={() => handleStepToggle(stepName)}
-                />
-              }
-              label={stepName}
-            />
-          ))}
-        </FormGroup>
       </Paper>
     </LocalizationProvider>
   );

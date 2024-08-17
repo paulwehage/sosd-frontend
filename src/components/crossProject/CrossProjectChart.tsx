@@ -1,7 +1,7 @@
 import React, { FC, useState, useMemo } from 'react';
 import { CrossProjectHistoricalDataPoint } from '../../services/historicalData/historicalData.interface.ts';
 import { LineChart } from '@mui/x-charts';
-import { Box, Grid, Checkbox, FormGroup, FormControlLabel } from '@mui/material';
+import {Box, Grid, Checkbox, FormGroup, FormControlLabel, Typography, Paper} from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers';
@@ -66,26 +66,22 @@ const CrossProjectChart: FC<HistoricalDataChartProps> = ({ data }) => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Box sx={{ p: 2, height: '100%' }}>
-        <Grid container spacing={2} sx={{ mb: 4 }}>
-          <Grid item xs={6}>
+      <Paper elevation={3} sx={{p: 4}}>
+      <Box sx={{ height: 500, width: '100%' }}>
+        <Typography variant="h6" gutterBottom>Cross Project CO2 Consumption</Typography>
             <DatePicker
               label="Start Date"
               value={startDate}
               onChange={(newValue) => newValue && setStartDate(newValue.startOf('day'))}  // Start of day
               format="YYYY-MM-DD"  // ISO format
+              sx={{mr: 8, ml: 2}}
             />
-          </Grid>
-          <Grid item xs={6}>
             <DatePicker
               label="End Date"
               value={endDate}
               onChange={(newValue) => newValue && setEndDate(newValue.endOf('day'))}  // End of day
               format="YYYY-MM-DD"  // ISO format
             />
-          </Grid>
-        </Grid>
-        <Box sx={{ height: '400px', width: '100%', mb: 8 }}>
           <LineChart
             xAxis={[{
               data: allDates,
@@ -96,9 +92,8 @@ const CrossProjectChart: FC<HistoricalDataChartProps> = ({ data }) => {
               label: 'CO2 Consumption (g)',
             }]}
             series={series}
-            height={500}
-            width={800}
-            margin={{ top: 20, right: 40, bottom: 80, left: 60 }}
+            height={400}
+            width={700}
           />
         </Box>
         <FormGroup row>
@@ -115,7 +110,7 @@ const CrossProjectChart: FC<HistoricalDataChartProps> = ({ data }) => {
             />
           ))}
         </FormGroup>
-      </Box>
+        </Paper>
     </LocalizationProvider>
   );
 };

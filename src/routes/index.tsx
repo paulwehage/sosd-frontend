@@ -2,9 +2,10 @@ import { createBrowserRouter, Navigate } from 'react-router-dom';
 import Projects from '../pages/Projects';
 import ProjectPage from '../pages/Project';
 import OperationsPage from '../pages/Operations.tsx';
-import IntegrationDeploymentPage from '../pages/Integration.tsx';
+import IntegrationDeploymentPage from '../pages/Cicd.tsx';
 import Layout from '../components/Layout.tsx';
 import InfrastructureElementPage from '../pages/InfrastructureElement.tsx';
+import PipelinePage from '../pages/Pipeline.tsx';
 
 export const router = createBrowserRouter([
   {
@@ -37,7 +38,11 @@ export const router = createBrowserRouter([
           {
             path: ':id/operations/:elementId',
             element: <InfrastructureElementPage />
-          }
+          },
+          {
+            path: ':id/integration-deployment/:pipelineId',
+            element: <PipelinePage />
+          },
         ]
       }
     ]

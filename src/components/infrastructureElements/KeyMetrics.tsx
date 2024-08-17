@@ -8,21 +8,38 @@ interface KeyMetric {
 }
 
 interface KeyMetricsProps {
-  metrics: Record<string, KeyMetric>;
+  metrics: {
+    dailyCo2Consumption: number;
+    keyMetric1: KeyMetric;
+    keyMetric2: KeyMetric;
+  };
 }
 
-const KeyMetrics: FC<KeyMetricsProps> = ({ metrics }) => (
-  <>
-    <Typography variant="h6" gutterBottom>Key Metrics</Typography>
-    <Grid container spacing={2}>
-      {Object.entries(metrics).map(([key, metric]) => (
-        <Grid item xs={4} key={key}>
-          <Typography variant="subtitle2">{metric.name}</Typography>
-          <Typography variant="h5">{metric.value} {metric.dataType === 'decimal' ? 'g' : ''}</Typography>
-        </Grid>
-      ))}
-    </Grid>
-  </>
-);
+const KeyMetrics: FC<KeyMetricsProps> = ({ metrics }) => {
+  const { dailyCo2Consumption, keyMetric1, keyMetric2 } = metrics;
+
+  const orderedMetrics = [
+    { name: 'Daily CO2 Consumption', value: dailyCo2Consumption, dataType: 'decimal' },
+    keyMetric1,
+    keyMetric2
+  ];
+
+  return (
+    <>
+      <Typography variant="h6" gutterBottom>Key Metrics</Typography>
+      <Grid container spacing={2}>
+        {orderedMetrics.map((metric, index) => (
+          <Grid item xs={4} key={index}>
+            <Typography variant="subtitle2">{metric.name}</Typography>
+            <Typography variant="h5">
+              {metric.dataType === 'decimal' ? metric.value.toFixed(2) : metric.value}
+              {metric.dataType === 'decimal' ? ' g' : ''}
+            </Typography>
+          </Grid>
+        ))}
+      </Grid>
+    </>
+  );
+};
 
 export default KeyMetrics;

@@ -7,22 +7,22 @@ import useHistoricalData from '../hooks/historicalData/useHistoricalData.ts';
 import LoadingCircle from '../components/LoadingCircle.tsx';
 import KeyMetrics from '../components/infrastructureElements/KeyMetrics.tsx';
 import OtherMetrics from '../components/infrastructureElements/OtherMetrics.tsx';
-import {BarPlot} from '@mui/x-charts';
+import InfrastructureElementHistoricalChart
+  from '../components/infrastructureElements/InfrastrucureElementHistoricalChart.tsx';
 
 const InfrastructureElementPage: FC = () => {
-  const { id, infraElementId } = useParams<{ id: string; infraElementId: string }>();
-  const projectId = Number(id);
-  const elementId = Number(infraElementId);
-
-  const { data: elementData, loading: elementLoading, error: elementError } = useInfrastructureElement(elementId);
+  const { elementId } = useParams<{ id: string, elementId: string }>();
+  const elementIdNumber = useMemo(() => Number(elementId), [elementId]);
+  const { data: elementData, loading: elementLoading, error: elementError } = useInfrastructureElement(elementIdNumber);
+  const elementTags = useMemo(() => elementData?.tags || [], [elementData]);
 
   const historicalDataParams = useMemo(() => ({
     type: 'infrastructureElement' as const,
     startDate: dayjs().subtract(30, 'day').startOf('day').toISOString(),
     endDate: dayjs().endOf('day').toISOString(),
-    tags: elementData?.tags || [],
-    serviceId: elementId
-  }), [elementId, elementData?.tags]);
+    tags: elementTags,
+    serviceId: elementIdNumber
+  }), [elementIdNumber, elementTags]);
 
   const { data: historicalData, loading: historicalLoading, error: historicalError } = useHistoricalData(historicalDataParams);
 
@@ -33,7 +33,7 @@ const InfrastructureElementPage: FC = () => {
   const { name, type, category, cloudProvider, keyMetrics, metrics } = elementData;
 
   const chartData = historicalData.map(item => ({
-    date: dayjs(item.date).format('MMM DD'),
+    date: dayjs(item.date).format('DD.MM.YY '),
     co2: item.total_co2_consumption
   }));
 
@@ -53,7 +53,7 @@ const InfrastructureElementPage: FC = () => {
 
         <Grid item xs={12} md={6}>
           <Paper elevation={3} sx={{ p: 2 }}>
-            <BarPlot data={chartData} />
+            <InfrastructureElementHistoricalChart data={chartData} />
           </Paper>
         </Grid>
       </Grid>

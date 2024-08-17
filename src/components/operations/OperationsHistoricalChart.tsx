@@ -1,8 +1,11 @@
-import React, { FC, useState, useMemo, useEffect } from 'react';
-import { LineChart } from '@mui/x-charts';
-import { Box, Paper, Typography, FormGroup, FormControlLabel, Checkbox } from '@mui/material';
-import dayjs from 'dayjs';
+import React, {FC, useState, useMemo, useEffect} from 'react';
+import {LineChart} from '@mui/x-charts';
+import {Box, Paper, Typography, FormGroup, FormControlLabel, Checkbox} from '@mui/material';
+import dayjs, {Dayjs} from 'dayjs';
 import LoadingCircle from '../LoadingCircle';
+import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
+import {LocalizationProvider} from '@mui/x-date-pickers';
+import {DatePicker} from '@mui/x-date-pickers/DatePicker';
 
 interface HistoricalDataPoint {
   date: string;
@@ -17,11 +20,13 @@ interface OperationsHistoricalChartProps {
   loading: boolean;
 }
 
-const OperationsHistoricalChart: FC<OperationsHistoricalChartProps> = ({ data, loading }) => {
+const OperationsHistoricalChart: FC<OperationsHistoricalChartProps> = ({data, loading}) => {
   const [activeElements, setActiveElements] = useState<string[]>([]);
+  const [startDate, setStartDate] = useState<Dayjs>(dayjs('2024-05-16'));
+  const [endDate, setEndDate] = useState<Dayjs>(dayjs('2024-07-25'));
 
   const processedData = useMemo(() => {
-    if (!data || data.length === 0) return { xAxis: [], series: [] };
+    if (!data || data.length === 0) return {xAxis: [], series: []};
 
     const elementMap = new Map<string, Map<number, number>>();
     const dateSet = new Set<number>();
@@ -44,7 +49,7 @@ const OperationsHistoricalChart: FC<OperationsHistoricalChartProps> = ({ data, l
       data: sortedDates.map(date => dateValues.get(date) || null),
     }));
 
-    return { xAxis: sortedDates, series };
+    return {xAxis: sortedDates, series};
   }, [data]);
 
   useEffect(() => {
@@ -65,65 +70,69 @@ const OperationsHistoricalChart: FC<OperationsHistoricalChartProps> = ({ data, l
     );
   };
 
-  if (loading) return <LoadingCircle />;
+  if (loading) return <LoadingCircle/>;
 
   if (!data || data.length === 0) {
     return (
-      <Paper elevation={3} sx={{ p: 2 }}>
+      <Paper elevation={3} sx={{p: 2}}>
         <Typography>No historical data available</Typography>
       </Paper>
     );
   }
 
   return (
-    <Paper elevation={3} sx={{ p: 2 }}>
-      <Typography variant="h6" gutterBottom>Historical CO2 Consumption</Typography>
-      <Box sx={{ height: 500, width: '100%' }}>
-        <LineChart
-          xAxis={[{
-            data: processedData.xAxis,
-            scaleType: 'time',
-            valueFormatter: (value: number) => dayjs(value).format('YYYY-MM-DD'),
-          }]}
-          yAxis={[{
-            label: 'CO2 Consumption (g)',
-          }]}
-          series={filteredSeries.map(s => ({
-            ...s,
-            valueFormatter: (value: number | null) =>
-              value !== null ? `${value.toFixed(2)}g CO2` : 'N/A',
-          }))}
-          height={400}
-          width={800}
-          margin={{ top: 20, right: 20, bottom: 30, left: 60 }}
-          sx={{
-            '.MuiLineElement-root': {
-              strokeWidth: 2,
-            },
-            '.MuiMarkElement-root': {
-              stroke: 'white',
-              scale: '0.6',
-              fill: 'white',
-            },
-          }}
-        />
-      </Box>
-      <FormGroup row sx={{ mt: 2, flexWrap: 'wrap', justifyContent: 'center' }}>
-        {processedData.series.map(({ label }) => (
-          <FormControlLabel
-            key={label}
-            control={
-              <Checkbox
-                checked={activeElements.includes(label)}
-                onChange={() => handleElementToggle(label)}
-                size="small"
-              />
-            }
-            label={label}
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <Paper elevation={3} sx={{p: 2, pb: 16}}>
+        <Box sx={{height: 500, width: '100%'}}>
+          <Typography variant="h6" gutterBottom>Historical CO2 Consumption</Typography>
+          <DatePicker
+            label="Start Date"
+            value={startDate}
+            format="YYYY-MM-DD"
+            onChange={(newValue) => newValue && setStartDate(newValue)}
+            sx={{mr: 8, ml: 2}}
           />
-        ))}
-      </FormGroup>
-    </Paper>
+          <DatePicker
+            label="End Date"
+            value={endDate}
+            format="YYYY-MM-DD"
+            onChange={(newValue) => newValue && setEndDate(newValue)}
+          />
+          <LineChart
+            xAxis={[{
+              data: processedData.xAxis,
+              scaleType: 'time',
+              valueFormatter: (value: number) => dayjs(value).format('YYYY-MM-DD'),
+            }]}
+            yAxis={[{
+              label: 'CO2 Consumption (g)',
+            }]}
+            series={filteredSeries.map(s => ({
+              ...s,
+              valueFormatter: (value: number | null) =>
+                value !== null ? `${value.toFixed(2)}g CO2` : 'N/A',
+            }))}
+            height={400}
+            width={700}
+          />
+          <FormGroup row sx={{mt: 2, flexWrap: 'wrap', justifyContent: 'center'}}>
+            {processedData.series.map(({label}) => (
+              <FormControlLabel
+                key={label}
+                control={
+                  <Checkbox
+                    checked={activeElements.includes(label)}
+                    onChange={() => handleElementToggle(label)}
+                    size="small"
+                  />
+                }
+                label={label}
+              />
+            ))}
+          </FormGroup>
+        </Box>
+      </Paper>
+    </LocalizationProvider>
   );
 };
 
