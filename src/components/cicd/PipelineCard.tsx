@@ -24,7 +24,7 @@ const PipelineCard: FC<PipelineCardProps> = ({ pipeline }) => {
   const { activeProject } = useProjectContext();
 
   const handleClick = () => {
-    navigate(`/projects/${activeProject!.id}/operations/${pipeline.id}`)
+    navigate(`/projects/${activeProject!.id}/integration-deployment/${pipeline.id}`)
   };
 
   return (
@@ -32,6 +32,7 @@ const PipelineCard: FC<PipelineCardProps> = ({ pipeline }) => {
       sx={{
         cursor: 'pointer',
         transition: '0.3s',
+        marginBottom: 2,
         '&:hover': {
           backgroundColor: 'rgba(0, 0, 0, 0.04)',
         },

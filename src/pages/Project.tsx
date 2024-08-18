@@ -1,6 +1,6 @@
-import React, { useMemo, useEffect } from 'react';
-import { useParams, Outlet } from 'react-router-dom';
-import {Box, Typography, Grid, CircularProgress, Paper} from '@mui/material';
+import React, { useMemo } from 'react';
+import { useParams } from 'react-router-dom';
+import {Box, Typography, Grid} from '@mui/material';
 import useProject from '../hooks/projects/useProject';
 import useHistoricalData from '../hooks/historicalData/useHistoricalData';
 import SDLCOverview from '../components/project/SDLCOverview';
@@ -8,20 +8,12 @@ import UserFlows from '../components/project/UserFlows';
 import ProjectChart from '../components/project/ProjectChart';
 import dayjs from 'dayjs';
 import LoadingCircle from '../components/LoadingCircle.tsx';
-import useProjectContext from '../hooks/context/useProjectContext.ts';
 
 const ProjectPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const projectId = Number(id);
   const { project, userFlows, loading: projectLoading, error: projectError } = useProject(projectId);
-  const { setActiveProject } = useProjectContext();
   const projectTags = useMemo(() => project?.tags.map(tag => tag.name) || [], [project?.tags]);
-
-  useEffect(() => {
-    if (project) {
-      setActiveProject(project);
-    }
-  }, [project, setActiveProject]);
 
   const { data: historicalData, loading: historicalLoading, error: historicalError } = useHistoricalData({
     type: 'sdlc',

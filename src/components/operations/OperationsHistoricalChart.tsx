@@ -82,40 +82,46 @@ const OperationsHistoricalChart: FC<OperationsHistoricalChartProps> = ({data, lo
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Paper elevation={3} sx={{p: 2, pb: 16}}>
-        <Box sx={{height: 500, width: '100%'}}>
+      <Paper elevation={3} sx={{p: 2, pb: 2}}>
+        <Box sx={{display: 'flex', flexDirection: 'column', height: '100%', width: '100%'}}>
           <Typography variant="h6" gutterBottom>Historical CO2 Consumption</Typography>
-          <DatePicker
-            label="Start Date"
-            value={startDate}
-            format="YYYY-MM-DD"
-            onChange={(newValue) => newValue && setStartDate(newValue)}
-            sx={{mr: 8, ml: 2}}
-          />
-          <DatePicker
-            label="End Date"
-            value={endDate}
-            format="YYYY-MM-DD"
-            onChange={(newValue) => newValue && setEndDate(newValue)}
-          />
-          <LineChart
-            xAxis={[{
-              data: processedData.xAxis,
-              scaleType: 'time',
-              valueFormatter: (value: number) => dayjs(value).format('YYYY-MM-DD'),
-            }]}
-            yAxis={[{
-              label: 'CO2 Consumption (g)',
-            }]}
-            series={filteredSeries.map(s => ({
-              ...s,
-              valueFormatter: (value: number | null) =>
-                value !== null ? `${value.toFixed(2)}g CO2` : 'N/A',
-            }))}
-            height={400}
-            width={700}
-          />
-          <FormGroup row sx={{mt: 2, flexWrap: 'wrap', justifyContent: 'center'}}>
+          <Box sx={{display: 'flex', justifyContent: 'flex-start', mb: 2}}>
+            <DatePicker
+              label="Start Date"
+              value={startDate}
+              format="YYYY-MM-DD"
+              onChange={(newValue) => newValue && setStartDate(newValue)}
+              sx={{mr: 2}}
+            />
+            <DatePicker
+              label="End Date"
+              value={endDate}
+              format="YYYY-MM-DD"
+              onChange={(newValue) => newValue && setEndDate(newValue)}
+            />
+          </Box>
+          <Box sx={{flexGrow: 1, minHeight: 400, width: '100%', mb: 2}}>
+            <LineChart
+              xAxis={[{
+                data: processedData.xAxis,
+                scaleType: 'time',
+                valueFormatter: (value: number) => dayjs(value).format('YYYY-MM-DD'),
+              }]}
+              yAxis={[{
+                label: 'CO2 Consumption (g)',
+                labelStyle: {marginRight: 50},
+              }]}
+              series={filteredSeries.map(s => ({
+                ...s,
+                valueFormatter: (value: number | null) =>
+                  value !== null ? `${value.toFixed(2)}g CO2` : 'N/A',
+              }))}
+              height={500}
+              width={700}
+              margin={{top: 120}}
+            />
+          </Box>
+          <FormGroup sx={{mt: 2, display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center'}}>
             {processedData.series.map(({label}) => (
               <FormControlLabel
                 key={label}
@@ -127,6 +133,7 @@ const OperationsHistoricalChart: FC<OperationsHistoricalChartProps> = ({data, lo
                   />
                 }
                 label={label}
+                sx={{minWidth: '33%', flexGrow: 1}}
               />
             ))}
           </FormGroup>

@@ -1,109 +1,149 @@
-import React, { FC, useState, useMemo } from 'react';
-import { LineChart } from '@mui/x-charts';
-import { Box, Grid, Paper, Checkbox, FormGroup, FormControlLabel } from '@mui/material';
+import React, { FC, useState, useMemo, ReactNode } from 'react';
+import { Box, Typography, Paper, FormGroup, FormControlLabel, Checkbox } from '@mui/material';
+import { LineChart, BarChart } from '@mui/x-charts';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import dayjs, { Dayjs } from 'dayjs';
 
 interface DataPoint {
-  date: string | number;
-  [key: string]: number | string;
+  date: string;
+  [key: string]: any;
 }
 
-interface HistoricalDataChartProps {
+interface ChartSeries {
+  dataKey: string;
+  label: string;
+  color?: string;
+}
+
+interface HistoricalChartProps {
   data: DataPoint[];
-  dateKey: string;
-  valueKeys: string[];
+  title: string;
   yAxisLabel: string;
+  series: ChartSeries[];
+  chartType: 'line' | 'bar';
+  showDatePicker?: boolean;
+  showLegend?: boolean;
+  extraContent?: ReactNode;
+  processData?: (data: DataPoint[]) => any[];
+  xAxisFormatter?: (value: any) => string;
+  yAxisFormatter?: (value: any) => string;
 }
 
-const HistoricalDataChart: FC<HistoricalDataChartProps> = ({ data, dateKey, valueKeys, yAxisLabel }) => {
-  const [startDate, setStartDate] = useState<Dayjs>(dayjs('2024-05-16'));
-  const [endDate, setEndDate] = useState<Dayjs>(dayjs('2024-07-25'));
-  const [activeKeys, setActiveKeys] = useState<string[]>(valueKeys);
+const HistoricalChart: FC<HistoricalChartProps> = ({
+                                                                     data,
+                                                                     title,
+                                                                     yAxisLabel,
+                                                                     series,
+                                                                     chartType,
+                                                                     showDatePicker = true,
+                                                                     showLegend = true,
+                                                                     extraContent,
+                                                                     processData,
+                                                                     xAxisFormatter = (value: number) => dayjs(value).format('MMM DD'),
+                                                                     yAxisFormatter = (value: number) => `${value.toFixed(2)}g CO2`,
+                                                                   }) => {
+  const [startDate, setStartDate] = useState<Dayjs>(dayjs().subtract(30, 'days'));
+  const [endDate, setEndDate] = useState<Dayjs>(dayjs());
+  const [activeSeries, setActiveSeries] = useState<string[]>(series.map(s => s.dataKey));
 
   const filteredData = useMemo(() => {
     return data.filter(point => {
-      const pointDate = dayjs(point[dateKey]);
+      const pointDate = dayjs(point.date);
       return pointDate.isAfter(startDate) && pointDate.isBefore(endDate);
     });
-  }, [data, dateKey, startDate, endDate]);
+  }, [data, startDate, endDate]);
 
-  const allDates = useMemo(() => {
-    return [...new Set(filteredData.map(point => dayjs(point[dateKey]).valueOf()))].sort((a, b) => a - b);
-  }, [filteredData, dateKey]);
+  const processedData = useMemo(() => {
+    if (processData) {
+      return processData(filteredData);
+    }
+    return filteredData;
+  }, [filteredData, processData]);
 
-  const series = useMemo(() => {
-    return valueKeys
-      .filter(key => activeKeys.includes(key))
-      .map(key => ({
-        data: filteredData.map(point => Number(point[key])),
-        label: key,
-        valueFormatter: (value: number) => `${value}g CO2`,
-      }));
-  }, [filteredData, valueKeys, activeKeys]);
+  const chartSeries = useMemo(() =>
+      series
+        .filter(s => activeSeries.includes(s.dataKey))
+        .map(s => ({
+          ...s,
+          valueFormatter: yAxisFormatter,
+        })),
+    [series, activeSeries, yAxisFormatter]
+  );
 
-  const handleKeyToggle = (key: string) => {
-    setActiveKeys(prev =>
-      prev.includes(key)
-        ? prev.filter(k => k !== key)
-        : [...prev, key]
+  const handleSeriesToggle = (dataKey: string) => {
+    setActiveSeries(prev =>
+      prev.includes(dataKey)
+        ? prev.filter(k => k !== dataKey)
+        : [...prev, dataKey]
     );
   };
 
+  const ChartComponent = chartType === 'line' ? LineChart : BarChart;
+
+  if (processedData.length === 0) {
+    return <Typography>No historical data available</Typography>;
+  }
+
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Paper elevation={3} sx={{ p: 2 }}>
-        <Grid container spacing={2} sx={{ mb: 2 }}>
-          <Grid item xs={6}>
-            <DatePicker
-              label="Start Date"
-              value={startDate}
-              onChange={(newValue) => newValue && setStartDate(newValue)}
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <DatePicker
-              label="End Date"
-              value={endDate}
-              onChange={(newValue) => newValue && setEndDate(newValue)}
-            />
-          </Grid>
-        </Grid>
-        <Box sx={{ height: 400, width: '100%', mb: 4 }}>
-          <LineChart
+      <Paper elevation={3} sx={{ p: 2, pb: 16 }}>
+        <Box sx={{ height: 500, width: '100%' }}>
+          <Typography variant="h6" gutterBottom>{title}</Typography>
+          {showDatePicker && (
+            <>
+              <DatePicker
+                label="Start Date"
+                value={startDate}
+                onChange={(newValue) => newValue && setStartDate(newValue)}
+                format="YYYY-MM-DD"
+                sx={{ mr: 8, ml: 2 }}
+              />
+              <DatePicker
+                label="End Date"
+                value={endDate}
+                onChange={(newValue) => newValue && setEndDate(newValue)}
+                format="YYYY-MM-DD"
+              />
+            </>
+          )}
+          <ChartComponent
+            dataset={processedData}
             xAxis={[{
-              data: allDates,
+              dataKey: 'date',
               scaleType: 'time',
-              valueFormatter: (value) => dayjs(value).format('YYYY-MM-DD'),
+              valueFormatter: xAxisFormatter,
             }]}
             yAxis={[{
               label: yAxisLabel,
             }]}
-            series={series}
-            width={600}
+            series={chartSeries}
             height={400}
-            margin={{ top: 20, right: 40, bottom: 70, left: 60 }}
+            width={700}
           />
-        </Box>
-        <FormGroup row>
-          {valueKeys.map(key => (
-            <FormControlLabel
-              key={key}
-              control={
-                <Checkbox
-                  checked={activeKeys.includes(key)}
-                  onChange={() => handleKeyToggle(key)}
+          {showLegend && (
+            <FormGroup row sx={{ mt: 2, flexWrap: 'wrap', justifyContent: 'center' }}>
+              {series.map(({ dataKey, label }) => (
+                <FormControlLabel
+                  key={dataKey}
+                  control={
+                    <Checkbox
+                      checked={activeSeries.includes(dataKey)}
+                      onChange={() => handleSeriesToggle(dataKey)}
+                      size="small"
+                    />
+                  }
+                  label={label}
                 />
-              }
-              label={key}
-            />
-          ))}
-        </FormGroup>
+              ))}
+            </FormGroup>
+          )}
+          {extraContent}
+        </Box>
       </Paper>
     </LocalizationProvider>
   );
 };
 
-export default HistoricalDataChart;
+export default HistoricalChart;

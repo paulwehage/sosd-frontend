@@ -1,24 +1,21 @@
 import React, {FC, useState, useMemo} from 'react';
 import {useParams} from 'react-router-dom';
-import {Box, Grid, Typography, TextField, Paper} from '@mui/material';
+import {Box, Grid, Typography, TextField} from '@mui/material';
 import {Pagination} from '@mui/material';
-import useHistoricalData from '../hooks/historicalData/useHistoricalData';
-import useProjectContext from '../hooks/context/useProjectContext';
-import PipelineCard from '../components/cicd/PipelineCard';
-import CicdHistoricalChart from '../components/cicd/CicdHistoricalChart';
-import LoadingCircle from '../components/LoadingCircle';
-import useCicd from '../hooks/cicd/useCicd.ts';
+import useHistoricalData from '../../../hooks/historicalData/useHistoricalData.ts';
+import useProjectContext from '../../../hooks/context/useProjectContext.ts';
+import PipelineCard from '../../../components/cicd/PipelineCard.tsx';
+import CicdHistoricalChart from '../../../components/cicd/CicdHistoricalChart.tsx';
+import LoadingCircle from '../../../components/LoadingCircle.tsx';
+import useCicd from '../../../hooks/cicd/useCicd.ts';
 
 const ITEMS_PER_PAGE = 4;
 
 const CicdPage: FC = () => {
-  const {id} = useParams<{ id: string }>();
-  const projectId = Number(id);
   const {activeProject} = useProjectContext();
   const [searchTerm, setSearchTerm] = useState('');
   const [page, setPage] = useState(1);
   const projectTags = useMemo(() => activeProject?.tags.map(tag => tag.name) || [], [activeProject?.tags]);
-
   const {data: pipelinesData, loading: pipelinesLoading, error: pipelinesError} = useCicd({tags: projectTags});
 
   const historicalDataParams = useMemo(() => ({

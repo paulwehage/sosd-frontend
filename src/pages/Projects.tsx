@@ -1,11 +1,10 @@
 import React, { FC, useState, useMemo } from 'react';
-import {Box, Button, CircularProgress, Grid, Paper, TextField} from '@mui/material';
+import {Box, Button, CircularProgress, Grid, TextField} from '@mui/material';
 import useProjects from '../hooks/projects/useProjects';
 import useHistoricalData from '../hooks/historicalData/useHistoricalData.ts';
 import ProjectList from '../components/crossProject/ProjectList';
 import ProjectForm from '../components/crossProject/ProjectForm';
 import CrossProjectChart from '../components/crossProject/CrossProjectChart';
-import Navbar from '../components/navbar/Navbar';
 import { Project, ProjectFormData } from '../services/projects/project.interface';
 import dayjs from 'dayjs';
 
@@ -107,7 +106,6 @@ const Projects: FC = () => {
             <CrossProjectChart data={historicalData} />
           </Grid>
         </Grid>
-
         <ProjectForm
           project={editingProject}
           open={isFormOpen}

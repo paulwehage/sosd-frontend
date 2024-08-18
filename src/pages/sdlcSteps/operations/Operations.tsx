@@ -1,11 +1,11 @@
-import React, { useCallback, useMemo } from 'react';
-import { Grid, Paper, Typography, Box } from '@mui/material';
-import useOperations from '../hooks/operations/useOperations';
-import useHistoricalData from '../hooks/historicalData/useHistoricalData';
-import InfrastructureElementList from '../components/operations/InfrastructureElementList';
-import OperationsHistoricalChart from '../components/operations/OperationsHistoricalChart';
+import React, { useMemo } from 'react';
+import { Grid, Typography, Box } from '@mui/material';
+import useOperations from '../../../hooks/operations/useOperations.ts';
+import useHistoricalData from '../../../hooks/historicalData/useHistoricalData.ts';
+import InfrastructureElementList from '../../../components/operations/InfrastructureElementList.tsx';
+import OperationsHistoricalChart from '../../../components/operations/OperationsHistoricalChart.tsx';
 import dayjs from 'dayjs';
-import useProjectContext from '../hooks/context/useProjectContext.ts';
+import useProjectContext from '../../../hooks/context/useProjectContext.ts';
 
 const OperationsPage: React.FC = () => {
   const { activeProject } = useProjectContext();

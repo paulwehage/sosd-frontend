@@ -1,20 +1,31 @@
-import React, { FC, useMemo } from 'react';
+import React, {FC, useEffect, useMemo} from 'react';
 import { useParams } from 'react-router-dom';
 import { Box, Grid, Paper, Typography, Divider } from '@mui/material';
 import dayjs from 'dayjs';
-import useInfrastructureElement from '../hooks/operations/useInfrastructureElement.ts';
-import useHistoricalData from '../hooks/historicalData/useHistoricalData.ts';
-import LoadingCircle from '../components/LoadingCircle.tsx';
-import KeyMetrics from '../components/infrastructureElements/KeyMetrics.tsx';
-import OtherMetrics from '../components/infrastructureElements/OtherMetrics.tsx';
+import useInfrastructureElement from '../../../hooks/operations/useInfrastructureElement.ts';
+import useHistoricalData from '../../../hooks/historicalData/useHistoricalData.ts';
+import LoadingCircle from '../../../components/LoadingCircle.tsx';
+import KeyMetrics from '../../../components/infrastructureElements/KeyMetrics.tsx';
+import OtherMetrics from '../../../components/infrastructureElements/OtherMetrics.tsx';
 import InfrastructureElementHistoricalChart
-  from '../components/infrastructureElements/InfrastrucureElementHistoricalChart.tsx';
+  from '../../../components/infrastructureElements/InfrastrucureElementHistoricalChart.tsx';
+import useProjectContext from '../../../hooks/context/useProjectContext.ts';
 
 const InfrastructureElementPage: FC = () => {
   const { elementId } = useParams<{ id: string, elementId: string }>();
   const elementIdNumber = useMemo(() => Number(elementId), [elementId]);
   const { data: elementData, loading: elementLoading, error: elementError } = useInfrastructureElement(elementIdNumber);
   const elementTags = useMemo(() => elementData?.tags || [], [elementData]);
+  const { setBreadcrumbInfo } = useProjectContext();
+
+  useEffect(() => {
+    if (elementData) {
+      setBreadcrumbInfo({ elementName: elementData.name });
+    }
+    return () => {
+      setBreadcrumbInfo({ elementName: '' });
+    };
+  }, [elementData, setBreadcrumbInfo]);
 
   const historicalDataParams = useMemo(() => ({
     type: 'infrastructureElement' as const,

@@ -27,6 +27,13 @@ export interface InfrastructureElementHistoricalDataPoint {
     total_co2_consumption: number;
 }
 
+export interface PipelineHistoricalDataPoint {
+  pipeline_name: string;
+  pipeline_id: string;
+  date: string;
+  total_co2_consumption: number;
+}
+
 
 export interface HistoricalDataParams {
   startDate: string;

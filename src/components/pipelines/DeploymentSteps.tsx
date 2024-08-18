@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
+import {Paper, Table, TableBody, TableCell, TableHead, TableRow, Typography} from '@mui/material';
 
 interface DeploymentStepsProps {
   steps: any[]; // Typ entsprechend Ihrer Datenstruktur anpassen
@@ -8,6 +8,7 @@ interface DeploymentStepsProps {
 const DeploymentSteps: FC<DeploymentStepsProps> = ({ steps }) => {
   return (
     <>
+      <Paper elevation={3} sx={{ p: 2, mb: 3 }}>
       <Typography variant="h6">Deployment</Typography>
       <Table>
         <TableHead>
@@ -27,6 +28,7 @@ const DeploymentSteps: FC<DeploymentStepsProps> = ({ steps }) => {
           ))}
         </TableBody>
       </Table>
+    </Paper>
     </>
   );
 };

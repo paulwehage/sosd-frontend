@@ -6,7 +6,7 @@ function App() {
   return (
     <>
       <ProjectProvider>
-        <RouterProvider router={router} />
+        <RouterProvider router={router}/>
       </ProjectProvider>
     </>
   );
