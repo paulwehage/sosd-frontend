@@ -1,50 +1,76 @@
-# React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# Software Sustainability Dashboard Frontend (SOSD)
 
-Currently, two official plugins are available:
+This repository contains the frontend application for the Software Sustainability Dashboard, built with React and Vite.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Prerequisites
 
-## Expanding the ESLint configuration
+Before you begin, ensure you have met the following requirements:
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- **Node.js and npm**: Ensure Node.js and npm are installed. You can download them from [Node.js official website](https://nodejs.org/).
+- **Git**: Ensure Git is installed for version control. You can download it from [Git's official website](https://git-scm.com/).
+- **Backend**: Ensure the [SOSD Backend](https://github.com/paulwehage/sosd-backend) is running, as it is required for the frontend to function correctly.
 
-- Configure the top-level `parserOptions` property like this:
+## Getting Started
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+Follow these instructions to set up and run the frontend project on your local machine.
+
+### Clone the Repository
+
+```sh
+git clone git@github.com:paulwehage/sosd-frontend.git
+cd sosd-frontend
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+### Install Dependencies
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+1. Install the dependencies:
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+    ```sh
+    npm install
+    ```
+
+### Configure Environment Variables
+
+1. Create a `.env` file in the root directory and add the following environment variables:
+
+    ```env
+    VITE_API_URL=http://localhost:3000/api
+    ```
+
+   Ensure that the `VITE_API_URL` points to the correct API endpoint of the backend.
+
+### Running the Application
+
+1. Start the development server:
+
+    ```sh
+    npm run dev
+    ```
+
+   This will start the Vite development server, and you can access the application at `http://localhost:5173`.
+
+### Building for Production
+
+1. To build the application for production, run:
+
+    ```sh
+    npm run build
+    ```
+
+   The production-ready files will be generated in the `dist` directory.
+
+### Previewing the Production Build
+
+1. To preview the production build locally, run:
+
+    ```sh
+    npm run preview
+    ```
+
+   This will start a local server to preview the production build at `http://localhost:4173`.
+
+## Troubleshooting
+
+- **API Connection Issues**: Ensure the backend is running and the `VITE_API_URL` is correctly configured in the `.env` file.
+- **Port Conflicts**: If the default ports (5173 for development, 4173 for production preview) are in use, you can change them in the respective configurations.
