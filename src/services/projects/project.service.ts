@@ -28,10 +28,17 @@ export const createProject = async (projectData: ProjectFormData): Promise<Proje
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(projectData),
+    body: JSON.stringify({
+      ...projectData,
+      tags: projectData.tags  // Ensure tags are sent as an array of strings
+    }),
   });
+  if (!response.ok) {
+    throw new Error('Failed to create project');
+  }
   return response.json();
 };
+
 
 export const updateProject = async (id: number, projectData: ProjectFormData): Promise<Project> => {
   const response = await fetch(`${API_DOMAIN}/projects/${id}`, {
