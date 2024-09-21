@@ -1,5 +1,5 @@
 import React, { FC, useState, useMemo } from 'react';
-import {Box, Typography, Grid, Paper} from '@mui/material';
+import { Box, Typography, Paper, FormGroup, FormControlLabel, Checkbox } from '@mui/material';
 import { LineChart } from '@mui/x-charts';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -18,8 +18,9 @@ interface CicdHistoricalChartProps {
 }
 
 const CicdHistoricalChart: FC<CicdHistoricalChartProps> = ({ data }) => {
-  const [startDate, setStartDate] = useState<Dayjs>(dayjs().subtract(30, 'days'));
-  const [endDate, setEndDate] = useState<Dayjs>(dayjs());
+  const [startDate, setStartDate] = useState<Dayjs>(dayjs('2024-05-16'));
+  const [endDate, setEndDate] = useState<Dayjs>(dayjs('2024-07-25'));
+  const [activePipelines, setActivePipelines] = useState<string[]>([]);
 
   const filteredData = useMemo(() => {
     return data.filter(point => {
@@ -42,24 +43,41 @@ const CicdHistoricalChart: FC<CicdHistoricalChartProps> = ({ data }) => {
       });
     });
 
+    if (activePipelines.length === 0) {
+      setActivePipelines(Array.from(pipelineMap.keys()));
+    }
+
     const allDates = [...new Set(filteredData.map(point => dayjs(point.date).valueOf()))].sort((a, b) => a - b);
 
     const dataset = allDates.map(date => {
       const dataPoint: { date: number } = { date };
       pipelineMap.forEach((points, key) => {
-        const point = points.find(p => p.date === date);
-        dataPoint[key] = point ? point.co2 : null;
+        if (activePipelines.includes(key)) {
+          const point = points.find(p => p.date === date);
+          dataPoint[key] = point ? point.co2 : null;
+        }
       });
       return dataPoint;
     });
 
-    const series = Array.from(pipelineMap.keys()).map(key => ({
-      dataKey: key,
-      label: key,
-    }));
+    const series = Array.from(pipelineMap.keys())
+      .filter(key => activePipelines.includes(key))
+      .map(key => ({
+        dataKey: key,
+        label: key,
+        valueFormatter: (value: number) => `${value} g CO2e`,
+      }));
 
-    return { dataset, series };
-  }, [filteredData]);
+    return { dataset, series, allPipelines: Array.from(pipelineMap.keys()) };
+  }, [filteredData, activePipelines]);
+
+  const handlePipelineToggle = (pipelineName: string) => {
+    setActivePipelines(prev =>
+      prev.includes(pipelineName)
+        ? prev.filter(p => p !== pipelineName)
+        : [...prev, pipelineName]
+    );
+  };
 
   if (processedData.dataset.length === 0) {
     return <Typography>No historical data available</Typography>;
@@ -68,37 +86,51 @@ const CicdHistoricalChart: FC<CicdHistoricalChartProps> = ({ data }) => {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Paper elevation={3} sx={{ p: 2 }}>
-      <Box sx={{ height: 500, width: '100%' }}>
-        <Typography variant="h6" gutterBottom>Historical CO2 Consumption</Typography>
-            <DatePicker
-              label="Start Date"
-              value={startDate}
-              onChange={(newValue) => newValue && setStartDate(newValue)}
-              format="YYYY-MM-DD"
-              sx={{ mr: 8, ml: 2 }}
+        <Box sx={{ height: 500, width: '100%' }}>
+          <Typography variant="h6" gutterBottom>Historical CO2 Consumption</Typography>
+          <DatePicker
+            label="Start Date"
+            value={startDate}
+            onChange={(newValue) => newValue && setStartDate(newValue)}
+            format="YYYY-MM-DD"
+            sx={{ mr: 8, ml: 2 }}
+          />
+          <DatePicker
+            label="End Date"
+            value={endDate}
+            onChange={(newValue) => newValue && setEndDate(newValue)}
+            format="YYYY-MM-DD"
+          />
+          <LineChart
+            dataset={processedData.dataset}
+            xAxis={[{
+              dataKey: 'date',
+              scaleType: 'time',
+              valueFormatter: (value: number) => dayjs(value).format('MMM DD'),
+            }]}
+            yAxis={[{
+              label: 'CO2 Consumption (g CO2e)',
+            }]}
+            series={processedData.series}
+            height={400}
+            width={700}
+          />
+        </Box>
+        <FormGroup row>
+          {processedData.allPipelines.map(pipelineName => (
+            <FormControlLabel
+              key={pipelineName}
+              control={
+                <Checkbox
+                  checked={activePipelines.includes(pipelineName)}
+                  onChange={() => handlePipelineToggle(pipelineName)}
+                />
+              }
+              label={pipelineName}
             />
-            <DatePicker
-              label="End Date"
-              value={endDate}
-              onChange={(newValue) => newValue && setEndDate(newValue)}
-              format="YYYY-MM-DD"
-            />
-        <LineChart
-          dataset={processedData.dataset}
-          xAxis={[{
-            dataKey: 'date',
-            scaleType: 'time',
-            valueFormatter: (value: number) => dayjs(value).format('MMM DD'),
-          }]}
-          yAxis={[{
-            label: 'CO2 Consumption (g)',
-          }]}
-          series={processedData.series}
-          height={400}
-          width={700}
-        />
-      </Box>
-        </Paper>
+          ))}
+        </FormGroup>
+      </Paper>
     </LocalizationProvider>
   );
 };

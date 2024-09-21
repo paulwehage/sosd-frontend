@@ -9,6 +9,7 @@ import IntegrationSteps from '../../../components/pipelines/IntegrationSteps.tsx
 import DeploymentSteps from '../../../components/pipelines/DeploymentSteps.tsx';
 import PipelineHistoricalChart from '../../../components/pipelines/PipelineHistoricalChart.tsx';
 import useProjectContext from '../../../hooks/context/useProjectContext.ts';
+import dayjs from 'dayjs';
 
 const PipelinePage: FC = () => {
   const { pipelineId } = useParams<{ pipelineId: string }>();
@@ -30,8 +31,8 @@ const PipelinePage: FC = () => {
 
   const historicalDataParams = useMemo(() => ({
     type: 'pipeline' as const,
-    startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-    endDate: new Date().toISOString(),
+    startDate: dayjs('2024-05-16').startOf('day').toISOString(),  // Start of day ISO format
+    endDate: dayjs('2024-07-25').endOf('day').toISOString(),        // End of day ISO format
     tags: projectTags,
     pipelineId: pipelineId
   }), [pipelineId, projectTags]);

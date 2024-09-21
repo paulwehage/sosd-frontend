@@ -8,6 +8,7 @@ import PipelineCard from '../../../components/cicd/PipelineCard.tsx';
 import CicdHistoricalChart from '../../../components/cicd/CicdHistoricalChart.tsx';
 import LoadingCircle from '../../../components/LoadingCircle.tsx';
 import useCicd from '../../../hooks/cicd/useCicd.ts';
+import dayjs from 'dayjs';
 
 const ITEMS_PER_PAGE = 4;
 
@@ -20,8 +21,8 @@ const CicdPage: FC = () => {
 
   const historicalDataParams = useMemo(() => ({
     type: 'cicd' as const,
-    startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-    endDate: new Date().toISOString(),
+    startDate: dayjs('2024-05-16').startOf('day').toISOString(),  // Start of day ISO format
+    endDate: dayjs('2024-07-25').endOf('day').toISOString(),        // End of day ISO format
     tags: projectTags
   }), [projectTags]);
 
