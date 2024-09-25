@@ -27,16 +27,14 @@ const InfrastructureElementPage: FC = () => {
     };
   }, [elementData, setBreadcrumbInfo]);
 
-  const historicalDataParams = useMemo(() => ({
+  const { data: historicalData, loading: historicalLoading, error: historicalError } =  useHistoricalData({
     type: 'infrastructureElement' as const,
-    startDate: dayjs().subtract(30, 'day').startOf('day').toISOString(),
-    endDate: dayjs().endOf('day').toISOString(),
+    startDate: dayjs('2024-05-16').startOf('day').toISOString(),  // Start of day ISO format
+    endDate: dayjs('2024-07-25').endOf('day').toISOString(),        // End of day ISO formatnpm run dev
     tags: elementTags,
     serviceId: elementIdNumber
-  }), [elementIdNumber, elementTags]);
-
-  const { data: historicalData, loading: historicalLoading, error: historicalError } = useHistoricalData(historicalDataParams);
-
+  });
+  
   if (elementLoading || historicalLoading) return <LoadingCircle />;
   if (elementError || historicalError) return <Typography color="error">Error loading data</Typography>;
   if (!elementData) return <Typography>No data available</Typography>;

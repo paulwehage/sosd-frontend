@@ -17,14 +17,12 @@ const OperationsPage: React.FC = () => {
 
   const { data: infrastructureElements, loading: opsLoading, error: opsError } = useOperations({ tags: projectTags });
 
-  const historicalDataParams = useMemo(() => ({
+  const { data: historicalData, loading: historicalLoading, error: historicalError } = useHistoricalData ({
     type: 'operations' as const,
     startDate: dayjs('2024-05-16').startOf('day').toISOString(),
     endDate: dayjs('2024-07-16').startOf('day').toISOString(),
     tags: projectTags
-  }), [projectTags]);
-
-  const { data: historicalData, loading: historicalLoading, error: historicalError } = useHistoricalData(historicalDataParams);
+  });
 
   if (!activeProject) return <Typography>No active project selected</Typography>;
   if (opsLoading || historicalLoading) return <Typography>Loading...</Typography>;

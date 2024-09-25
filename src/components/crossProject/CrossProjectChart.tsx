@@ -1,7 +1,7 @@
-import React, { FC, useState, useMemo } from 'react';
+import { FC, useState, useMemo } from 'react';
 import { CrossProjectHistoricalDataPoint } from '../../services/historicalData/historicalData.interface.ts';
 import { LineChart } from '@mui/x-charts';
-import {Box, Grid, Checkbox, FormGroup, FormControlLabel, Typography, Paper} from '@mui/material';
+import {Box, Checkbox, FormGroup, FormControlLabel, Typography, Paper} from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers';

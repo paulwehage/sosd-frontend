@@ -25,13 +25,20 @@ const OperationsHistoricalChart: FC<OperationsHistoricalChartProps> = ({data, lo
   const [startDate, setStartDate] = useState<Dayjs>(dayjs('2024-05-16'));
   const [endDate, setEndDate] = useState<Dayjs>(dayjs('2024-07-25'));
 
+  const filteredData = useMemo(() => {
+    return data.filter(point => {
+      const pointDate = dayjs(point.date);
+      return pointDate.isAfter(startDate) && pointDate.isBefore(endDate);
+    });
+  }, [data, startDate, endDate]);
+
   const processedData = useMemo(() => {
-    if (!data || data.length === 0) return {xAxis: [], series: []};
+    if (!filteredData || filteredData.length === 0) return {xAxis: [], series: []};
 
     const elementMap = new Map<string, Map<number, number>>();
     const dateSet = new Set<number>();
 
-    data.forEach((point) => {
+    filteredData.forEach((point) => {
       const elementKey = `${point.infrastructure_element_name} (${point.service_name} - ${point.cloud_provider})`;
       const dateValue = dayjs(point.date).valueOf();
       dateSet.add(dateValue);
@@ -50,7 +57,7 @@ const OperationsHistoricalChart: FC<OperationsHistoricalChartProps> = ({data, lo
     }));
 
     return {xAxis: sortedDates, series};
-  }, [data]);
+  }, [filteredData]); // Geänderte Abhängigkeit
 
   useEffect(() => {
     if (processedData.series.length > 0 && activeElements.length === 0) {

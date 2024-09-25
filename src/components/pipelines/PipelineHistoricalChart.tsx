@@ -46,7 +46,6 @@ const PipelineHistoricalChart: FC<PipelineHistoricalChartProps> = ({ data }) => 
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Paper elevation={3} sx={{ p: 2 }}>
         <Box>
           <Typography variant="h6">Historical Data</Typography>
           <DatePicker
@@ -83,7 +82,6 @@ const PipelineHistoricalChart: FC<PipelineHistoricalChartProps> = ({ data }) => 
             SCI per week: {calculateSCI(filteredData)} g CO2e
           </Typography>
         </Box>
-      </Paper>
     </LocalizationProvider>
   );
 };
