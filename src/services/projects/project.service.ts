@@ -68,8 +68,9 @@ export const createProject = async (projectData: ProjectFormData): Promise<Proje
  * @throws Will throw an error if the fetch operation fails.
  */
 export const updateProject = async (id: number, projectData: ProjectFormData): Promise<Project> => {
+  console.log(id, projectData)
   const response = await fetch(`${API_DOMAIN}/projects/${id}`, {
-    method: 'PUT',
+    method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
     },
