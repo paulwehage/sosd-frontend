@@ -8,15 +8,21 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import dayjs, { Dayjs } from 'dayjs';
 import {DATE_BEGIN, DATE_END} from '../../constants';
 
+// Interface defining the shape of props for the `CrossProjectChart` component
 interface HistoricalDataChartProps {
-  data: CrossProjectHistoricalDataPoint[];
+  data: CrossProjectHistoricalDataPoint[]; // Array of data points for cross-project CO2 consumption
 }
 
+// Functional component to render a line chart for cross-project CO2 consumption
 const CrossProjectChart: FC<HistoricalDataChartProps> = ({ data }) => {
+  // States for managing the selected start and end dates for data filtering
   const [startDate, setStartDate] = useState<Dayjs>(dayjs(DATE_BEGIN));
   const [endDate, setEndDate] = useState<Dayjs>(dayjs(DATE_END));
+
+  // State for managing which projects' data is actively displayed on the chart
   const [activeProjects, setActiveProjects] = useState<string[]>([]);
 
+  // Filter data based on the selected start and end dates
   const filteredData = useMemo(() => {
     return data.filter(point => {
       const pointDate = dayjs(point.date);
@@ -24,18 +30,20 @@ const CrossProjectChart: FC<HistoricalDataChartProps> = ({ data }) => {
     });
   }, [data, startDate, endDate]);
 
+  // Process the filtered data into a map by project name
   const projectData = useMemo(() => {
     const projectMap = filteredData.reduce((acc, point) => {
       if (!acc[point.project_name]) {
         acc[point.project_name] = [];
       }
       acc[point.project_name].push({
-        date: dayjs(point.date).valueOf(),
-        co2: point.total_co2_consumption
+        date: dayjs(point.date).valueOf(), // Convert date to timestamp
+        co2: point.total_co2_consumption, // CO2 consumption value
       });
       return acc;
     }, {} as Record<string, { date: number; co2: number }[]>);
 
+    // Set all projects as active initially if no projects are active
     if (activeProjects.length === 0) {
       setActiveProjects(Object.keys(projectMap));
     }
@@ -43,25 +51,28 @@ const CrossProjectChart: FC<HistoricalDataChartProps> = ({ data }) => {
     return projectMap;
   }, [filteredData, activeProjects]);
 
+  // Get all unique dates in the filtered data for the x-axis of the chart
   const allDates = useMemo(() => {
     return [...new Set(filteredData.map(point => dayjs(point.date).valueOf()))].sort((a, b) => a - b);
   }, [filteredData]);
 
+  // Prepare series data for each active project to display on the chart
   const series = useMemo(() => {
     return Object.entries(projectData)
-      .filter(([projectName]) => activeProjects.includes(projectName))
+      .filter(([projectName]) => activeProjects.includes(projectName)) // Only include active projects
       .map(([projectName, points]) => ({
-        data: points.map(p => p.co2),
-        label: projectName,
-        valueFormatter: (value: number) => `${value}g CO2`,
+        data: points.map(p => p.co2), // Array of CO2 values for the project
+        label: projectName, // Use project name as label
+        valueFormatter: (value: number) => `${value}g CO2`, // Format CO2 values
       }));
   }, [projectData, activeProjects]);
 
+  // Toggle the visibility of a project's data on the chart
   const handleProjectToggle = (projectName: string) => {
     setActiveProjects(prev =>
       prev.includes(projectName)
-        ? prev.filter(p => p !== projectName)
-        : [...prev, projectName]
+        ? prev.filter(p => p !== projectName) // Remove if already active
+        : [...prev, projectName] // Add if not active
     );
   };
 

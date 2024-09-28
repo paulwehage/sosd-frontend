@@ -1,6 +1,12 @@
 import {API_DOMAIN} from '../../constants';
 import {Project, ProjectDetail, ProjectFormData} from './project.interface';
 
+/**
+ * Fetches all projects.
+ *
+ * @returns {Promise<Project[]>} A promise that resolves to an array of Project objects.
+ * @throws Will throw an error if the fetch operation fails.
+ */
 export const getAllProjects = async (): Promise<Project[]> => {
   const response = await fetch(`${API_DOMAIN}/projects`);
   if (!response.ok) {
@@ -9,6 +15,13 @@ export const getAllProjects = async (): Promise<Project[]> => {
   return response.json();
 };
 
+/**
+ * Fetches a specific project by its ID.
+ *
+ * @param {number} id - The unique identifier of the project.
+ * @returns {Promise<ProjectDetail>} A promise that resolves to a ProjectDetail object.
+ * @throws Will throw an error if the fetch operation fails.
+ */
 export const getProject = async (id: number): Promise<ProjectDetail> => {
   try {
     const response = await fetch(`${API_DOMAIN}/projects/${id}`);
@@ -22,6 +35,13 @@ export const getProject = async (id: number): Promise<ProjectDetail> => {
   }
 };
 
+/**
+ * Creates a new project.
+ *
+ * @param {ProjectFormData} projectData - The data for the new project.
+ * @returns {Promise<Project>} A promise that resolves to the created Project object.
+ * @throws Will throw an error if the fetch operation fails.
+ */
 export const createProject = async (projectData: ProjectFormData): Promise<Project> => {
   const response = await fetch(`${API_DOMAIN}/projects`, {
     method: 'POST',
@@ -39,7 +59,14 @@ export const createProject = async (projectData: ProjectFormData): Promise<Proje
   return response.json();
 };
 
-
+/**
+ * Updates an existing project.
+ *
+ * @param {number} id - The unique identifier of the project.
+ * @param {ProjectFormData} projectData - The updated data for the project.
+ * @returns {Promise<Project>} A promise that resolves to the updated Project object.
+ * @throws Will throw an error if the fetch operation fails.
+ */
 export const updateProject = async (id: number, projectData: ProjectFormData): Promise<Project> => {
   const response = await fetch(`${API_DOMAIN}/projects/${id}`, {
     method: 'PUT',
@@ -51,6 +78,13 @@ export const updateProject = async (id: number, projectData: ProjectFormData): P
   return response.json();
 };
 
+/**
+ * Deletes a project by its ID.
+ *
+ * @param {number} id - The unique identifier of the project.
+ * @returns {Promise<void>} A promise that resolves when the project is deleted.
+ * @throws Will throw an error if the fetch operation fails.
+ */
 export const deleteProject = async (id: number): Promise<void> => {
   const response = await fetch(`${API_DOMAIN}/projects/${id}`, {
     method: 'DELETE',

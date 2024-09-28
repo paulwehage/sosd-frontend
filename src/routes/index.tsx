@@ -13,6 +13,15 @@ import {
   TestingPage
 } from '../pages/sdlcSteps/other/DevelopmentPhases.tsx';
 
+/**
+ * Defines the routes for the application using react-router-dom's createBrowserRouter.
+ *
+ * @constant
+ * @type {object}
+ * @property {string} path - The URL path.
+ * @property {JSX.Element} element - The React component to render.
+ * @property {Array} children - Nested routes.
+ */
 export const router = createBrowserRouter([
   {
     path: '/',
