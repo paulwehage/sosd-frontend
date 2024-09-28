@@ -30,16 +30,6 @@ cd sosd-frontend
     npm install
     ```
 
-### Configure Environment Variables
-
-1. Create a `.env` file in the root directory and add the following environment variables:
-
-    ```env
-    VITE_API_URL=http://localhost:3000/api
-    ```
-
-   Ensure that the `VITE_API_URL` points to the correct API endpoint of the backend.
-
 ### Running the Application
 
 1. Start the development server:
@@ -72,5 +62,4 @@ cd sosd-frontend
 
 ## Troubleshooting
 
-- **API Connection Issues**: Ensure the backend is running and the `VITE_API_URL` is correctly configured in the `.env` file.
 - **Port Conflicts**: If the default ports (5173 for development, 4173 for production preview) are in use, you can change them in the respective configurations.
