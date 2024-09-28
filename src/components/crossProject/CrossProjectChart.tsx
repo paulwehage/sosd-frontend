@@ -6,14 +6,15 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import dayjs, { Dayjs } from 'dayjs';
+import {DATE_BEGIN, DATE_END} from '../../constants';
 
 interface HistoricalDataChartProps {
   data: CrossProjectHistoricalDataPoint[];
 }
 
 const CrossProjectChart: FC<HistoricalDataChartProps> = ({ data }) => {
-  const [startDate, setStartDate] = useState<Dayjs>(dayjs('2024-05-16'));
-  const [endDate, setEndDate] = useState<Dayjs>(dayjs('2024-07-25'));
+  const [startDate, setStartDate] = useState<Dayjs>(dayjs(DATE_BEGIN));
+  const [endDate, setEndDate] = useState<Dayjs>(dayjs(DATE_END));
   const [activeProjects, setActiveProjects] = useState<string[]>([]);
 
   const filteredData = useMemo(() => {

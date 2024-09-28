@@ -31,7 +31,7 @@ const PipelinePage: FC = () => {
 
   const historicalDataParams = useMemo(() => ({
     type: 'pipeline' as const,
-    startDate: dayjs('2024-05-16').startOf('day').toISOString(),  // Start of day ISO format
+    startDate: dayjs('2024-07-03').startOf('day').toISOString(),  // Start of day ISO format
     endDate: dayjs('2024-07-25').endOf('day').toISOString(),        // End of day ISO format
     tags: projectTags,
     pipelineId: pipelineId

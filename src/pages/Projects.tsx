@@ -7,6 +7,7 @@ import ProjectForm from '../components/crossProject/ProjectForm';
 import CrossProjectChart from '../components/crossProject/CrossProjectChart';
 import { Project, ProjectFormData } from '../services/projects/project.interface';
 import dayjs from 'dayjs';
+import {DATE_BEGIN, DATE_END} from '../constants';
 
 const Projects: FC = () => {
   const { projects, loading: projectsLoading, error: projectsError, createProject, updateProject, deleteProject } = useProjects();
@@ -16,8 +17,8 @@ const Projects: FC = () => {
 
   const { data: historicalData, loading: historicalDataLoading, error: historicalDataError } = useHistoricalData({
     type: 'projects',
-    startDate: dayjs('2024-05-16').startOf('day').toISOString(),  // Start of day ISO format
-    endDate: dayjs('2024-07-25').endOf('day').toISOString()        // End of day ISO format
+    startDate: dayjs(DATE_BEGIN).startOf('day').toISOString(),  // Start of day ISO format
+    endDate: dayjs(DATE_END).endOf('day').toISOString()        // End of day ISO format
   });
 
   const filteredProjects = useMemo(() => {

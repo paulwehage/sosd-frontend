@@ -17,7 +17,7 @@ interface PipelineHistoricalChartProps {
 }
 
 const PipelineHistoricalChart: FC<PipelineHistoricalChartProps> = ({ data }) => {
-  const [startDate, setStartDate] = useState<Dayjs>(dayjs('2024-05-16'));
+  const [startDate, setStartDate] = useState<Dayjs>(dayjs('2024-07-03'));
   const [endDate, setEndDate] = useState<Dayjs>(dayjs('2024-07-25'));
 
   const filteredData = useMemo(() => {

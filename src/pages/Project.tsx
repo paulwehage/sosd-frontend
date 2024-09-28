@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import {Box, Typography, Grid} from '@mui/material';
 import useProject from '../hooks/projects/useProject';
@@ -8,6 +8,7 @@ import UserFlows from '../components/project/UserFlows';
 import ProjectChart from '../components/project/ProjectChart';
 import dayjs from 'dayjs';
 import LoadingCircle from '../components/LoadingCircle.tsx';
+import {DATE_BEGIN, DATE_END} from '../constants';
 
 const ProjectPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -17,8 +18,8 @@ const ProjectPage: React.FC = () => {
 
   const { data: historicalData, loading: historicalLoading, error: historicalError } = useHistoricalData({
     type: 'sdlc',
-    startDate: dayjs('2024-05-16').startOf('day').toISOString(),
-    endDate: dayjs('2024-07-16').startOf('day').toISOString(),
+    startDate: dayjs(DATE_BEGIN).startOf('day').toISOString(),
+    endDate: dayjs(DATE_END).startOf('day').toISOString(),
     tags: projectTags
   });
 

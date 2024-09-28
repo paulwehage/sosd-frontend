@@ -1,5 +1,4 @@
 import React, {FC, useState, useMemo} from 'react';
-import {useParams} from 'react-router-dom';
 import {Box, Grid, Typography, TextField} from '@mui/material';
 import {Pagination} from '@mui/material';
 import useHistoricalData from '../../../hooks/historicalData/useHistoricalData.ts';
@@ -9,6 +8,7 @@ import CicdHistoricalChart from '../../../components/cicd/CicdHistoricalChart.ts
 import LoadingCircle from '../../../components/LoadingCircle.tsx';
 import useCicd from '../../../hooks/cicd/useCicd.ts';
 import dayjs from 'dayjs';
+import {DATE_BEGIN, DATE_END} from '../../../constants';
 
 const ITEMS_PER_PAGE = 4;
 
@@ -21,8 +21,8 @@ const CicdPage: FC = () => {
 
   const historicalDataParams = useMemo(() => ({
     type: 'cicd' as const,
-    startDate: dayjs('2024-05-16').startOf('day').toISOString(),  // Start of day ISO format
-    endDate: dayjs('2024-07-25').endOf('day').toISOString(),        // End of day ISO format
+    startDate: dayjs(DATE_BEGIN).startOf('day').toISOString(),  // Start of day ISO format
+    endDate: dayjs(DATE_END).endOf('day').toISOString(),        // End of day ISO format
     tags: projectTags
   }), [projectTags]);
 

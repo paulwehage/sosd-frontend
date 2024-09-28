@@ -6,6 +6,7 @@ import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
 import {LocalizationProvider} from '@mui/x-date-pickers';
 import dayjs, {Dayjs} from 'dayjs';
 import LoadingCircle from '../LoadingCircle.tsx';
+import {DATE_BEGIN, DATE_END} from '../../constants';
 
 interface ProjectHistoricalDataPoint {
   sdlc_step: string;
@@ -19,8 +20,8 @@ interface ProjectHistoricalChartProps {
 }
 
 const ProjectHistoricalChart: FC<ProjectHistoricalChartProps> = ({data, loading}) => {
-  const [startDate, setStartDate] = useState<Dayjs>(dayjs('2024-05-16'));
-  const [endDate, setEndDate] = useState<Dayjs>(dayjs('2024-07-25'));
+  const [startDate, setStartDate] = useState<Dayjs>(dayjs(DATE_BEGIN));
+  const [endDate, setEndDate] = useState<Dayjs>(dayjs(DATE_END));
   const [activeSteps, setActiveSteps] = useState<string[]>([]);
 
   const filteredData = useMemo(() => {
